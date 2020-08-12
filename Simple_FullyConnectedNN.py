@@ -35,7 +35,7 @@ input_size = 784
 num_classes = 10
 learning_rate = 0.001
 batch_size = 64
-num_epochs = 3
+num_epochs = 1
 
 # Load Data
 
@@ -56,7 +56,6 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 # Train Network
 train_loss = []
 for each_epoch in range(num_epochs):
-    print(f"Epoch : {each_epoch}")
     for batch_idx, data in enumerate(train_loader):
 
         input_data, labels = data
@@ -72,7 +71,7 @@ for each_epoch in range(num_epochs):
         scores = model(data)
         loss = criterion(scores, targets)
 
-        #print(f"Loss at batch idx : {batch_idx} is {loss.item() : .3f}")
+        #print(f"Loss at epoch : {each_epoch} and batch idx : {batch_idx} is {loss.item() : .3f}")
         train_loss.append(loss.item())
 
         # backward
@@ -86,26 +85,37 @@ for each_epoch in range(num_epochs):
 fig, ax = plt.subplots()
 ax.plot(range(len(train_loss)), train_loss)
 ax.set_title("Loss Curve")
-plt.xlabel("#epoches")
+plt.xlabel("#Iterations")
 plt.ylabel("loss")
 plt.show()
 
 
 # Check accuracy on training and test data
 
-correct = 0
-total = 0
-model.eval()
-with torch.no_grad():
-    for data in test_loader:
-        in_data, labels = data
-        in_data = in_data.to(device)
-        in_data = in_data.view(in_data.shape[0], -1)
-        labels = labels.to(device)
+def check_accuracy(loader, model):
+    if loader == train_loader:
+        print("Checking accuracy on training data")
+    else:
+        print("Checking accuracy on test data")
 
-        outputs = model(in_data)
-        _, prediction = outputs.max(1)
-        total += labels.size(0)
-        correct += (prediction == labels).sum().item()
+    correct = 0
+    total = 0
+    model.eval()
+    with torch.no_grad():
+        for data in loader:
+            in_data, labels = data
+            in_data = in_data.to(device)
+            in_data = in_data.view(in_data.shape[0], -1)
+            labels = labels.to(device)
+
+            outputs = model(in_data)
+            _, prediction = outputs.max(1)
+            total += labels.size(0)
+            correct += (prediction == labels).sum()
 
         print(f'Got {correct} / {total} with accuracy {float(correct)/float(total)*100:.2f}')
+
+
+check_accuracy(train_loader, model)
+check_accuracy(test_loader, model)
+
