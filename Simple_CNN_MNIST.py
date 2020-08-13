@@ -6,17 +6,20 @@ import torchvision.datasets as Datasets
 from torch.utils.data import DataLoader
 import torch.optim as optim
 import torchvision.transforms as transform
+from torch.utils.tensorboard import SummaryWriter
+
+writer = SummaryWriter()
 
 
 # Design model (Network)
 
 class SimpleCNN(nn.Module):
-    def __init__(self, in_channels=1, num_class=10 ):
+    def __init__(self, in_channels=1, num_class=10):
         super(SimpleCNN, self).__init__()
         self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=6, kernel_size=3, padding=1)
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
-        self. conv2 = nn.Conv2d(in_channels=6, out_channels=16, kernel_size=3)
-        self.fc1 = nn.Linear(16*6*6, 120)
+        self.conv2 = nn.Conv2d(in_channels=6, out_channels=16, kernel_size=3)
+        self.fc1 = nn.Linear(16 * 6 * 6, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, num_class)
 
@@ -43,14 +46,14 @@ in_channels = 1
 num_class = 10
 learning_rate = 0.01
 batch_size = 64
-num_epoch = 1
+num_epoch = 2
 
 # Load the data
 train_dataset = Datasets.MNIST(root='dataset/', train=True, download=True, transform=transform.ToTensor())
 train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 
 test_dataset = Datasets.MNIST(root='dataset/', train=False, download=True, transform=transform.ToTensor())
-test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=True)
 
 # Initialize the network
 model = SimpleCNN().to(device)
@@ -60,11 +63,11 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 # Train Network
+cnt = 0
 for epoch in range(num_epoch):
     for batch_idx, data in enumerate(train_loader):
-
+        cnt = cnt + 1
         images, labels = data
-
         # move data to cuda if available
         input_data = images.to(device)
         target = labels.to(device)
@@ -72,6 +75,9 @@ for epoch in range(num_epoch):
         # forward
         output = model(input_data)
         loss = criterion(output, target)
+        if batch_idx % 50 == 0:
+            cnt = cnt + 1
+            writer.add_scalar("Loss/train", loss, cnt)
 
         # backward
         optimizer.zero_grad()
@@ -79,6 +85,9 @@ for epoch in range(num_epoch):
 
         # update
         optimizer.step()
+
+writer.flush()
+writer.close()
 
 
 # check accuracy on training and test data
@@ -104,25 +113,8 @@ def check_accuracy(loader, model):
             _, prediction = output.max(1)
             total += labels.size(0)
             correct += (prediction == labels).sum()
-        print(f'Got {correct} / {total} with accuracy {float(correct)/float(total)*100:.2f}')
+        print(f'Got {correct} / {total} with accuracy {float(correct) / float(total) * 100:.2f}')
 
 
 check_accuracy(train_loader, model)
 check_accuracy(test_loader, model)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
