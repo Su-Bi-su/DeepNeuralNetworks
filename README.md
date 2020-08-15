@@ -15,4 +15,11 @@
 -> Tensorboard is used to plot the loss curve. 
 
 
+## Simple_CNN_MNIST
+-> Implemented CNN on CIFAR10 dataset.
+
+-> 10 class problem with color images.
+
+-> Tensorboard is used to plot the loss curve. 
+
 
