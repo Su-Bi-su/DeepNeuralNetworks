@@ -1,7 +1,7 @@
 # imports
 
 import os
-os.environ['TFF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import tensorflow as tf
 from tensorflow import keras
@@ -37,7 +37,7 @@ model.compile(
 if tf.test.gpu_device_name():
     print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
 else:
-    print("Please install GPU version of TF")
+    print("Network is not running in GPU. Please install GPU version of TF")
 
 model.fit(x_train, y_train, epochs=5)
 model.evaluate(x_test, y_test)
