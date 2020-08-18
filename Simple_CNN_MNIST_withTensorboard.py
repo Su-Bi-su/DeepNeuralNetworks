@@ -173,9 +173,9 @@ for epoch in range(num_epoch):
 
             # ...log a Matplotlib Figure showing the model's predictions on a
             # random mini-batch
-            writer.add_figure('predictions vs. actuals',
-                              plot_classes_preds(net, images, labels),
-                              global_step=epoch * len(train_loader) + batch_idx)
+            #writer.add_figure('predictions vs. actuals',
+            #                  plot_classes_preds(net, images, labels),
+            #                  global_step=epoch * len(train_loader) + batch_idx)
             running_loss = 0.0
 
 
@@ -184,7 +184,7 @@ writer.close()
 
 # check accuracy on training and test data
 
-'''
+
 def check_accuracy(loader, model):
     if loader == train_loader:
         print("Checking accuracy in train data.")
@@ -211,4 +211,3 @@ def check_accuracy(loader, model):
 check_accuracy(train_loader, model)
 check_accuracy(test_loader, model)
 
-'''
