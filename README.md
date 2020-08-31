@@ -22,7 +22,5 @@
 
 -> Tensorboard is used to plot the loss curve. 
 
--> for testing purpose.
-
 
 
